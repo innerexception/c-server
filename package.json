@@ -1,0 +1,14 @@
+{
+  "name": "c-server",
+  "version": "0.0.1",
+  "description": "simple session tracking server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "websocket": "^1.0.28"
+  },
+  "author": "jbaker",
+  "license": "ISC"
+}
