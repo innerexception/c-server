@@ -1,5 +1,6 @@
 var WebSocketServer = require('websocket').server;
-var http = require('http');
+var http = require('https');
+var fs = require('fs');
 var Constants = {
   PLAYER_AVAILABLE: 'ma',
   MATCH_UPDATE: 'mu'
@@ -7,8 +8,9 @@ var Constants = {
 /**
  * HTTP server
  */
-var server = http.createServer(function(request, response) {
-  // Not important for us. We're writing WebSocket server, not HTTP server
+var server = http.createServer({
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.cert')
 });
 server.listen(3333, function() {
   console.log((new Date()) + " Server is listening on port " + 3333);
