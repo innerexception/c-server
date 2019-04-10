@@ -9,8 +9,8 @@ var Constants = {
  * HTTP server
  */
 var server = http.createServer({
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.cert')
+  key: fs.readFileSync('privkey.pem'),
+  cert: fs.readFileSync('fullchain.pem')
 });
 server.listen(3333, function() {
   console.log((new Date()) + " Server is listening on port " + 3333);
