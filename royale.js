@@ -1,5 +1,6 @@
 var WebSocketServer = require('websocket').server;
 var http = require('https');
+var fs = require('fs');
 var Constants = {
   PLAYER_AVAILABLE: 'ma',
   MATCH_UPDATE: 'mu',
