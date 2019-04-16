@@ -26,7 +26,9 @@ var sockets = {};
 var wsServer = new WebSocketServer({
   // WebSocket server is tied to a HTTP server. WebSocket request is just
   // an enhanced HTTP request. For more info http://tools.ietf.org/html/rfc6455#page-6
-  httpServer: server
+  httpServer: server,
+  maxReceivedFrameSize: 131072,
+  maxReceivedMessageSize: 10 * 1024 * 1024,
 });
 
 // This callback function is called every time someone
