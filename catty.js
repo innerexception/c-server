@@ -35,7 +35,7 @@ wsServer.on('request', function(request) {
   // accept connection - you should check 'request.origin' to make sure that
   // client is connecting from your website
   // (http://en.wikipedia.org/wiki/Same_origin_policy)
-  if(request.origin.indexOf('cryptonomical.com') === -1 ) return
+  if(request.origin.indexOf('cryptonomical.com') === -1 && request.origin.indexOf('hwcdn.net') === -1) return
   var connection = request.accept(null, request.origin);
   var socketId = Date.now()+''+Math.random()
   connection.id = socketId
