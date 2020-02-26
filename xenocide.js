@@ -4,7 +4,9 @@ var fs = require('fs');
 var Constants = {
   PLAYER_AVAILABLE: 'ma',
   MATCH_UPDATE: 'mu',
-  SECRET: 'NWV$(UW^Y*@G$%B@2b54uigvb24cyt2c8'
+  SECRET: 'NWV$(UW^Y*@G$%B@2b54uigvb24cyt2c8',
+  REPLACE_PLAYER:'rpl',
+  UPDATE_ACTIVE_COMBAT:'uac'
 }
 /**
  * HTTP server
@@ -71,14 +73,27 @@ wsServer.on('request', function(request) {
               }
               console.log('created new session '+obj.sessionId)
             }
+            publishSessionUpdate(targetSession, Constants.REPLACE_PLAYER)
             break
           case Constants.MATCH_UPDATE:
             targetSession = {...targetSession, ...obj.event}
+            publishSessionUpdate(targetSession, Constants.MATCH_UPDATE)
+            break
+          case Constants.REPLACE_PLAYER:
+            targetSession.players = targetSession.players.map(p=>{
+              if(p.id === obj.event.player.id) return obj.event.player
+              return p
+            })
+            console.log('replaced: '+obj.event.player)
+            publishSessionUpdate(targetSession, Constants.REPLACE_PLAYER)
+            break
+          case Constants.UPDATE_ACTIVE_COMBAT:
+            targetSession = {...targetSession, ...obj.event}
+            publishSessionUpdate(targetSession, Constants.UPDATE_ACTIVE_COMBAT)
             break
         }
         sessions[obj.sessionId] = targetSession
-        publishSessionUpdate(targetSession)
-    }
+      }
   });
 
   // user disconnected
@@ -94,10 +109,9 @@ wsServer.on('request', function(request) {
           session.players = session.players.filter((rplayer) => rplayer.id !== player.id)
           session.playerSockets = session.playerSockets.filter((rplayer) => rplayer.id !== player.id)
           // remove user from sessions and send update
-          publishSessionUpdate(session)
+          publishSessionUpdate(session, Constants.MATCH_UPDATE)
           delete sockets[socketId]
-          console.log(session.players)
-          if(session.players.length === 0) { //TODO or there are no human players left
+          if(session.players.length === 0 || session.players.findIndex(p=>!p.isAI) === -1) { //or there are no human players left
             delete sessions[name]
             console.log('removed session '+name)
           }
@@ -106,8 +120,8 @@ wsServer.on('request', function(request) {
   });
 });
 
-const publishSessionUpdate = (targetSession) => {
-  var message = getSessionUpdateMessage(targetSession)
+const publishSessionUpdate = (targetSession, type) => {
+  var message = getSessionUpdateMessage(targetSession, type)
   // broadcast message to clients of session
   var json = JSON.stringify({ type:'message', data: message });
   targetSession.playerSockets.forEach((player) => {
@@ -115,9 +129,9 @@ const publishSessionUpdate = (targetSession) => {
   })
 }
 
-const getSessionUpdateMessage = (targetSession) => {
+const getSessionUpdateMessage = (targetSession, type) => {
   return JSON.stringify({
-    type: Constants.MATCH_UPDATE,
+    type,
     event: targetSession
   })
 }
