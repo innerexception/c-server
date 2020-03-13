@@ -1,5 +1,5 @@
 var WebSocketServer = require('websocket').server;
-var http = require('http');
+var http = require('https');
 var fs = require('fs');
 var Constants = {
   PLAYER_AVAILABLE: 'ma',
@@ -12,8 +12,8 @@ var Constants = {
  * HTTP server
  */
 var server = http.createServer({
-  // key: fs.readFileSync('privkey.pem'),
-  // cert: fs.readFileSync('fullchain.pem')
+  key: fs.readFileSync('privkey.pem'),
+  cert: fs.readFileSync('fullchain.pem')
 });
 server.listen(27015, function() {
   console.log((new Date()) + " Server is listening on port " + 27015);
